@@ -1,0 +1,27 @@
+# Données locales (lourdes)
+data/
+
+# Référence Figma exportée (ne pas versionner le code généré)
+_figma_extract/
+
+# IDE / outils
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+
+# Node (futur apps/web)
+node_modules/
+dist/
+build/
+*.local
+
+# OS
+.DS_Store
+Thumbs.db

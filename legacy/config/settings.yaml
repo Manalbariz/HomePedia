@@ -1,0 +1,175 @@
+project:
+  name: hompeedia
+  levels: ["city", "department", "region"]
+  text_cities_poc: ["paris", "lyon", "bordeaux"]
+  # Pour le POC “texte” (Inside Airbnb), on relie les villes à leurs codes INSEE communaux.
+  # Ces codes servent aussi au filtrage des communes dans DVF/INSEE.
+  city_insee_overrides:
+    paris: "75056"
+    lyon: "69123"
+    bordeaux: "33063"
+
+paths:
+  # Dossier local utilisé comme zone d'échange entre ingestion -> Spark -> dashboard.
+  local_data_dir: "data"
+  # (POC) Répertoires HDFS utilisés par les jobs Spark.
+  hdfs_base_dir: "/hompeedia"
+
+datasets:
+  dvf:
+    # Source : Statistiques DVF (pré-agrégées) sur data.gouv.fr.
+    # Le downloader résout les bons fichiers via l'API data.gouv (ou un mapping embarqué).
+    source_name: "statistiques-dvf"
+    # 50 = POC local ; 0 = toutes les communes du fichier (échelle nationale DVF)
+    sample_cities_communes: 50
+
+  insee_population:
+    source_name: "insee-population-2020"
+
+  ign_admin_express:
+    source_name: "admin-express"
+    format_preference: "geojson"
+
+  inside_airbnb:
+    # On charge les reviews (et métadonnées) pour quelques villes POC.
+    # Les URLs exactes sont résolues par un downloader à partir du portail Inside Airbnb.
+    source_name: "inside-airbnb"
+
+spark:
+  app_name: "hompeedia-spark-poc"
+  # Chemins HDFS attendus (à remplir par ingestion).
+  parquet_dir_prices: "${paths.hdfs_base_dir}/parquet/dvf_prices"
+  parquet_dir_demographics: "${paths.hdfs_base_dir}/parquet/insee_demographics"
+  parquet_dir_text: "${paths.hdfs_base_dir}/parquet/inside_airbnb_reviews"
+
+postgres:
+  db_name: "hompeedia"
+  schema: "public"
+  user: "hompeedia"
+  password: "hompeedia"
+
+mongo:
+  db_name: "hompeedia"
+
+kafka:
+  enabled: true
+  bootstrap_servers: "localhost:9092"
+  topic_ingestion: "hompeedia.ingestion.completed"
+  consumer_group: "hompeedia-pipeline"
+
+nlp:
+  # light = tout le fichier en streaming (gros volume, pas de PyTorch)
+  # transformers = modele HF (limiter max_texts_per_city, ex. 20000)
+  mode: "light"
+  language: "fr"
+  min_text_chars: 120
+  chunk_size: 50000
+  max_texts_per_city: 0
+  batch_size: 8
+  sentiment_model:
+    name: "cardiffnlp/twitter-xlm-roberta-base-sentiment"
+
+# Scénarios pour scripts/benchmark_volume.py (retour tuteur : volumétrie)
+# Raccourcis dashboard = cas d'usage (inspirés des personas, pas des écrans « Camille/Sofia »)
+dashboard:
+  # Repli si Postgres vide ; sinon le dashboard prend MAX(year) = dernière vintage DVF en base
+  fallback_year: 2023
+  use_cases:
+    compare:
+      label: "Comparer des territoires"
+      hint: "Ex. départements ou communes — prix, population, ressenti. Préfixe INSEE optionnel (ex. 69, 33)."
+      level: "department"
+      property_type: "apartments"
+      indicator: "price_m2_avg"
+      insee_prefix: ""
+    invest:
+      label: "Lire un marché (investissement)"
+      hint: "Ex. médiane au m² et mutations — échelle département recommandée."
+      level: "department"
+      property_type: "apartments"
+      indicator: "price_m2_median"
+      insee_prefix: ""
+    settle_near:
+      label: "S'installer près d'un lieu"
+      hint: "Ex. communes autour d'un pôle emploi — maisons, calme (filtrez par préfixe INSEE)."
+      level: "city"
+      property_type: "houses"
+      indicator: "price_m2_avg"
+      insee_prefix: "69"
+    explore:
+      label: "Explorer librement"
+      hint: "Tous les filtres à la main — carte + tableau."
+      level: "department"
+      property_type: "apartments"
+      indicator: "price_m2_avg"
+      insee_prefix: ""
+
+# Personas (doc produit / scores — non utilisés comme navigation UI)
+personas:
+  modes:
+    camille:
+      label: "Camille — Où vivre ?"
+      tagline: "Comparer des villes — prix, dynamisme, ressenti locataires (proxy transport & activités via NLP)"
+      default_level: "department"
+      property_type: "apartments"
+      score_weights:
+        prix: 0.35
+        population: 0.20
+        sentiment: 0.30
+        marche: 0.15
+      compare_cities:
+        - { insee: "69123", label: "Lyon" }
+        - { insee: "33063", label: "Bordeaux" }
+        - { insee: "44109", label: "Nantes" }
+        - { insee: "75056", label: "Paris" }
+        - { insee: "31555", label: "Toulouse" }
+    sofia:
+      label: "Sofia — Où investir ?"
+      tagline: "Repérer les départements : prix médian + liquidité (mutations DVF)"
+      default_level: "department"
+      property_type: "apartments"
+      map_metric: "price_m2_median"
+      map_metric_alt: "mutation_count"
+    maxime_lea:
+      label: "Maxime & Léa — Près du travail"
+      tagline: "Communes calmes autour de Lyon — maison, jardin, écoles (proxy NLP + marché discret)"
+      default_level: "city"
+      property_type: "houses"
+      anchor: { insee: "69123", label: "Lyon (travail)" }
+      # Préfixes code INSEE (communes) pour la carto ciblée Rhône / Ain / Isère / Loire
+      insee_prefixes: ["69", "01", "38", "42"]
+      calm_keywords:
+        - calme
+        - tranquille
+        - village
+        - jardin
+        - école
+        - ecole
+        - famille
+        - quartier
+        - paisible
+        - verdure
+
+# Limite WFS communes (0 = pas de limite). Utile après run national.
+geo:
+  max_communes_wfs: 400
+  wfs_chunk_size: 80
+
+volumetry:
+  scenarios:
+    baseline:
+      label: "POC — 50 communes"
+      dvf_sample_cities: 50
+    medium:
+      label: "Charge modérée — 500 communes"
+      dvf_sample_cities: 500
+    high:
+      label: "Forte volumétrie — 2000 communes"
+      dvf_sample_cities: 2000
+    all_cities:
+      label: "Sans filtre — toutes les communes du CSV DVF"
+      dvf_sample_cities: 0
+    national:
+      label: "Échelle nationale — toutes communes DVF + INSEE (sans filtre)"
+      dvf_sample_cities: 0
+

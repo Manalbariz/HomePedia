@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: hompeedia
+      POSTGRES_USER: hompeedia
+      POSTGRES_PASSWORD: hompeedia
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/initdb:/docker-entrypoint-initdb.d
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    environment:
+      - CLUSTER_NAME=hompeedia
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    volumes:
+      - hdfs_namenode:/hadoop/dfs/name
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    environment:
+      - CLUSTER_NAME=hompeedia
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+    volumes:
+      - hdfs_datanode:/hadoop/dfs/data
+    depends_on:
+      - namenode
+
+  spark-master:
+    # Tag 2.4.8-hadoop3.2-java8 n'existe plus.
+    image: bde2020/spark-master:3.1.1-hadoop3.2
+    environment:
+      - SPARK_MODE=master
+      - INIT_DAEMON_STEP=setup_spark
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    depends_on:
+      - namenode
+    volumes:
+      - .:/opt/hompeedia
+    working_dir: /opt/hompeedia
+
+  spark-worker:
+    # Tag 2.4.8-hadoop3.2-java8 n'existe plus.
+    image: bde2020/spark-worker:3.1.1-hadoop3.2
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://spark-master:7077
+    depends_on:
+      - spark-master
+    volumes:
+      - .:/opt/hompeedia
+    working_dir: /opt/hompeedia
+
+volumes:
+  postgres_data:
+  mongo_data:
+  hdfs_namenode:
+  hdfs_datanode:
+
