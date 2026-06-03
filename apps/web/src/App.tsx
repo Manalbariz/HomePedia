@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { AppStatus } from "@/components/AppStatus";
 import { Nav } from "@/components/Nav";
-import { MOCK_LISTINGS } from "@/mocks/listings";
+import { useListings } from "@/hooks/useListings";
 import type { AppView } from "@/types/listing";
 import { ChatView } from "@/views/ChatView";
 import { HeroView } from "@/views/HeroView";
@@ -10,6 +11,17 @@ import { MatchView } from "@/views/MatchView";
 
 export default function App() {
   const [view, setView] = useState<AppView>("hero");
+  const { listings, loading, error, reload } = useListings();
+
+  const status = <AppStatus loading={loading} error={error} onRetry={reload} />;
+  if (loading || error) {
+    return (
+      <div className="bg-background text-foreground min-h-screen">
+        <Nav view={view} onNavigate={setView} />
+        {status}
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -22,7 +34,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <HeroView listings={MOCK_LISTINGS} onNavigate={setView} />
+            <HeroView listings={listings} onNavigate={setView} />
           </motion.div>
         )}
         {view === "map" && (
@@ -32,7 +44,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <MapView listings={MOCK_LISTINGS} />
+            <MapView listings={listings} />
           </motion.div>
         )}
         {view === "match" && (
@@ -42,7 +54,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <MatchView listings={MOCK_LISTINGS} />
+            <MatchView listings={listings} />
           </motion.div>
         )}
         {view === "chat" && (
@@ -52,7 +64,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <ChatView />
+            <ChatView listings={listings} />
           </motion.div>
         )}
       </AnimatePresence>

@@ -4,7 +4,11 @@ import type { Listing } from "@/types/listing";
 import { MOCK_FRIENDS, MOCK_MESSAGES, type ChatMessage } from "@/mocks/chat";
 import { ListingCard } from "@/components/ListingCard";
 
-export function ChatView() {
+interface ChatViewProps {
+  listings: Listing[];
+}
+
+export function ChatView({ listings }: ChatViewProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(MOCK_MESSAGES);
   const [draft, setDraft] = useState("");
   const [activeFriend, setActiveFriend] = useState(MOCK_FRIENDS[0]!.id);
@@ -96,7 +100,14 @@ export function ChatView() {
                       {msg.text}
                     </div>
                   ) : (
-                    renderListing(msg.listing)
+                    (() => {
+                      const listing = listings.find((l) => l.id === msg.listingId);
+                      return listing ? (
+                        renderListing(listing)
+                      ) : (
+                        <p className="text-xs text-muted-foreground">Annonce introuvable</p>
+                      );
+                    })()
                   )}
                   <span className="text-[10px] text-muted-foreground px-1">{msg.time}</span>
                 </div>

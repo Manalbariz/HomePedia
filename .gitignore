@@ -1,5 +1,5 @@
-# Données locales (lourdes)
-data/
+# Données locales lourdes (racine uniquement — pas apps/api/data/)
+/data/
 
 # Référence Figma exportée (ne pas versionner le code généré)
 _figma_extract/

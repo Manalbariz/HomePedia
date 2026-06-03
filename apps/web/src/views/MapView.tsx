@@ -30,7 +30,10 @@ export function MapView({ listings }: MapViewProps) {
           <Filter size={13} /> Filtres
         </button>
         <div className="flex items-center gap-2 bg-secondary border border-border px-4 py-2.5 rounded-xl text-sm text-muted-foreground whitespace-nowrap">
-          <span className="text-primary font-semibold font-mono">48 243</span> annonces
+          <span className="text-primary font-semibold font-mono">
+            {listings.length.toLocaleString("fr-FR")}
+          </span>{" "}
+          annonces
         </div>
       </div>
 

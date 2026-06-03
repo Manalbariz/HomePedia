@@ -30,9 +30,11 @@ Voir `legacy/README.md` pour le runbook complet de l’ancien POC.
 ## Lancer l’interface (v2)
 
 ```powershell
-cd apps/web
-npm install
-npm run dev
+# API mock
+cd apps/api && npm install && npm run dev
+
+# Frontend (autre terminal)
+cd apps/web && npm install && npm run dev
 ```
 
-→ http://localhost:5173
+→ http://localhost:5173 (proxy `/api` → port 3001)
