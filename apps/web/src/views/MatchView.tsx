@@ -43,7 +43,7 @@ function MatchCard({
         else if (info.offset.x < -80) onDislike();
       }}
     >
-      <div className="w-full h-full rounded-3xl overflow-hidden border border-border bg-card relative shadow-2xl shadow-black/50 cursor-grab active:cursor-grabbing">
+      <div className="w-full h-full rounded-3xl overflow-hidden border border-border bg-card relative shadow-elevated cursor-grab active:cursor-grabbing">
         <div className="relative h-[58%] overflow-hidden bg-muted">
           <img src={listing.imageUrl} alt={listing.title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
@@ -109,7 +109,7 @@ export function MatchView({ listings }: MatchViewProps) {
     .filter((l): l is Listing => Boolean(l));
 
   return (
-    <div className="pt-[60px] min-h-screen bg-background flex flex-col items-center px-4">
+    <div className="theme-surface pt-[60px] min-h-screen bg-background flex flex-col items-center px-4">
       <div className="text-center mb-6 mt-6">
         <h1 className="font-display text-4xl font-black text-foreground uppercase tracking-tight">
           Match

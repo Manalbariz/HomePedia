@@ -28,12 +28,12 @@ Ouvrir http://localhost:5173
 | `src/hooks/` | `useListings` — charge les annonces depuis l’API |
 | `src/mocks/` | Chat / amis (UI seulement) |
 | `src/types/` | Modèle `Listing`, vues |
-| `src/components/` | Nav, carte placeholder, cartes annonce |
+| `src/components/` | Nav, `ListingsMap` (Leaflet + clusters), cartes annonce |
 | `src/views/` | Accueil, Carte, Match, Chat |
 
 ## Prochaines étapes
 
-- Leaflet à la place du placeholder `CityMap`
+- Filtres carte branchés sur query API
 - `POST /api/listings/import` (dépôt URL)
 - Écran comparatif multi-sites
 - Zone dépôt d’annonces

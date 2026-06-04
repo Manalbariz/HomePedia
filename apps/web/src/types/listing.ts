@@ -11,9 +11,8 @@ export interface Listing {
   tags: string[];
   score: number;
   imageUrl: string;
-  /** Position normalisée 0–100 sur la carte placeholder */
-  mapX: number;
-  mapY: number;
+  lat: number;
+  lon: number;
   source: ListingSource;
   url: string;
 }

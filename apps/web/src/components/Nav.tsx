@@ -6,6 +6,7 @@ import {
   Bell,
 } from "lucide-react";
 import type { AppView } from "@/types/listing";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const NAV_ITEMS: { id: AppView; label: string; icon: typeof Home }[] = [
   { id: "hero", label: "Accueil", icon: Home },
@@ -54,6 +55,7 @@ export function Nav({ view, onNavigate }: NavProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <button
           type="button"
           className="relative p-2 rounded-full hover:bg-secondary transition-colors"

@@ -38,7 +38,7 @@ export function ListingCard({
           <Star size={10} className="text-yellow-400 fill-yellow-400" />
           <span className="text-xs font-bold text-foreground">{listing.score}</span>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-black/70 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-background/80 to-transparent" />
         <div className="absolute bottom-2 left-3 text-white font-bold text-base font-mono">
           {listing.price.toLocaleString("fr-FR")} €
           <span className="text-sm font-normal opacity-80">/mois</span>

@@ -2,16 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Thème global — data-theme sur <html> (pas seulement la carte) */
+@layer base {
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --color-background: 8 12 30;
+    --color-foreground: 232 236 255;
+    --color-card: 14 20 40;
+    --color-primary: 255 75 92;
+    --color-secondary: 21 28 53;
+    --color-muted: 21 28 53;
+    --color-muted-foreground: 107 117 153;
+    --color-accent: 79 88 232;
+    --color-border: rgba(255, 255, 255, 0.07);
+    --color-map-bg: #070b18;
+    --color-glow-accent: rgba(79, 88, 232, 0.1);
+    --color-glow-primary: rgba(255, 75, 92, 0.08);
+    --shadow-elevated: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+    --color-background: 244 246 252;
+    --color-foreground: 14 20 40;
+    --color-card: 255 255 255;
+    --color-primary: 255 75 92;
+    --color-secondary: 232 236 248;
+    --color-muted: 232 236 248;
+    --color-muted-foreground: 92 102 138;
+    --color-accent: 79 88 232;
+    --color-border: rgba(14, 20, 40, 0.12);
+    --color-map-bg: #e8ecf4;
+    --color-glow-accent: rgba(79, 88, 232, 0.14);
+    --color-glow-primary: rgba(255, 75, 92, 0.12);
+    --shadow-elevated: 0 25px 50px -12px rgba(14, 20, 40, 0.12);
+  }
+}
+
 html,
 body,
 #root {
   height: 100%;
 }
 
+html {
+  background-color: rgb(var(--color-background));
+}
+
 body {
   margin: 0;
-  background-color: #080c1e;
-  color: #e8ecff;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
   font-family: "DM Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100%;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+/* Transition douce sur les surfaces UI (pas la carte Leaflet tuile par tuile) */
+[data-theme] nav,
+[data-theme] main,
+[data-theme] section,
+[data-theme] aside,
+[data-theme] article,
+[data-theme] .theme-surface {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.leaflet-container {
+  font-family: "DM Sans", sans-serif;
+  background: var(--color-map-bg) !important;
+}
+
+.listing-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
 }
