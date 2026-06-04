@@ -7,7 +7,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { AppView, Listing } from "@/types/listing";
-import { CityMap } from "@/components/CityMap";
+import { ListingsMap } from "@/components/ListingsMap";
 
 interface HeroViewProps {
   listings: Listing[];
@@ -16,10 +16,16 @@ interface HeroViewProps {
 
 export function HeroView({ listings, onNavigate }: HeroViewProps) {
   return (
-    <div className="pt-[60px] min-h-screen bg-background overflow-x-hidden relative">
+    <div className="theme-surface pt-[60px] min-h-screen bg-background overflow-x-hidden relative">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-[-100px] w-[700px] h-[600px] bg-accent/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-[-80px] w-[500px] h-[450px] bg-primary/8 rounded-full blur-[100px]" />
+        <div
+          className="absolute top-0 right-[-100px] w-[700px] h-[600px] rounded-full blur-[120px]"
+          style={{ background: "var(--color-glow-accent)" }}
+        />
+        <div
+          className="absolute bottom-0 left-[-80px] w-[500px] h-[450px] rounded-full blur-[100px]"
+          style={{ background: "var(--color-glow-primary)" }}
+        />
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 pt-14 pb-10 grid md:grid-cols-[1fr_1.1fr] gap-10 items-center">
@@ -75,7 +81,13 @@ export function HeroView({ listings, onNavigate }: HeroViewProps) {
 
         <div className="relative">
           <div className="relative rounded-2xl overflow-hidden border border-border h-[430px]">
-            <CityMap listings={listings} selectedId={null} onSelect={() => {}} />
+            <ListingsMap
+              listings={listings}
+              selectedId={null}
+              onSelect={() => {}}
+              interactive={false}
+              className="absolute inset-0 z-0 pointer-events-none"
+            />
             <div className="absolute bottom-4 left-4 right-4 flex gap-2">
               {listings.slice(0, 2).map((l) => (
                 <div
@@ -142,7 +154,7 @@ export function HeroView({ listings, onNavigate }: HeroViewProps) {
             key={title}
             type="button"
             onClick={() => onNavigate(action)}
-            className={`text-left bg-card rounded-2xl p-6 border border-border hover:border-white/20 transition-all group cursor-pointer ${bg}`}
+            className={`text-left bg-card rounded-2xl p-6 border border-border hover:border-foreground/20 transition-all group cursor-pointer ${bg}`}
           >
             <div
               className={`w-10 h-10 rounded-xl bg-secondary flex items-center justify-center mb-4 ${accent}`}

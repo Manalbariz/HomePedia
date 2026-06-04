@@ -4,22 +4,25 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#080C1E",
-        foreground: "#E8ECFF",
-        card: "#0E1428",
-        primary: "#FF4B5C",
-        secondary: "#151C35",
+        background: "rgb(var(--color-background) / <alpha-value>)",
+        foreground: "rgb(var(--color-foreground) / <alpha-value>)",
+        card: "rgb(var(--color-card) / <alpha-value>)",
+        primary: "rgb(var(--color-primary) / <alpha-value>)",
+        secondary: "rgb(var(--color-secondary) / <alpha-value>)",
         muted: {
-          DEFAULT: "#151C35",
-          foreground: "#6B7599",
+          DEFAULT: "rgb(var(--color-muted) / <alpha-value>)",
+          foreground: "rgb(var(--color-muted-foreground) / <alpha-value>)",
         },
-        accent: "#4F58E8",
-        border: "rgba(255, 255, 255, 0.07)",
+        accent: "rgb(var(--color-accent) / <alpha-value>)",
+        border: "var(--color-border)",
       },
       fontFamily: {
         display: ["'Barlow Condensed'", "sans-serif"],
         sans: ["'DM Sans'", "sans-serif"],
         mono: ["'DM Mono'", "monospace"],
+      },
+      boxShadow: {
+        elevated: "var(--shadow-elevated)",
       },
     },
   },

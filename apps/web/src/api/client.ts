@@ -35,3 +35,10 @@ export async function fetchListingById(id: string): Promise<Listing> {
   const res = await fetch(`${API_BASE}/api/listings/${encodeURIComponent(id)}`);
   return parseJson<Listing>(res);
 }
+
+export async function fetchSimilarListings(id: string): Promise<Listing[]> {
+  const res = await fetch(
+    `${API_BASE}/api/listings/${encodeURIComponent(id)}/similar`,
+  );
+  return parseJson<Listing[]>(res);
+}

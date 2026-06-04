@@ -9,6 +9,7 @@ Serveur Express minimal pour le frontend v2 (données annonces en JSON).
 | GET | `/api/health` | Santé du service |
 | GET | `/api/listings` | Toutes les annonces |
 | GET | `/api/listings/:id` | Une annonce (404 si absente) |
+| GET | `/api/listings/:id/similar` | Annonces similaires (ville, prix, surface — mock) |
 
 Données : `data/listings.json` (**22 annonces** de démo — Paris, Lyon, Bordeaux, Marseille, etc., 3 sources + `example`).
 

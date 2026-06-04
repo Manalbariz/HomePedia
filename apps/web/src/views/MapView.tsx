@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Filter, Search } from "lucide-react";
-import type { Listing } from "@/types/listing";
-import { CityMap } from "@/components/CityMap";
+import { fetchSimilarListings } from "@/api/client";
+import { ListingsMap } from "@/components/ListingsMap";
 import { ListingCard } from "@/components/ListingCard";
+import type { Listing } from "@/types/listing";
 
 interface MapViewProps {
   listings: Listing[];
@@ -11,11 +12,30 @@ interface MapViewProps {
 
 export function MapView({ listings }: MapViewProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [similar, setSimilar] = useState<Listing[]>([]);
   const selected = listings.find((l) => l.id === selectedId);
 
+  useEffect(() => {
+    if (!selectedId) {
+      setSimilar([]);
+      return;
+    }
+    let cancelled = false;
+    fetchSimilarListings(selectedId)
+      .then((data) => {
+        if (!cancelled) setSimilar(data);
+      })
+      .catch(() => {
+        if (!cancelled) setSimilar([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedId]);
+
   return (
-    <div className="pt-[60px] h-screen flex flex-col bg-background">
-      <div className="px-4 py-3 border-b border-border flex items-center gap-3 bg-background/80 backdrop-blur-sm">
+    <div className="theme-surface pt-[60px] h-screen flex flex-col bg-background">
+      <div className="px-4 py-3 border-b border-border flex items-center gap-3 bg-background/80 backdrop-blur-sm z-10">
         <div className="flex-1 flex items-center gap-2 bg-secondary rounded-xl px-4 py-2.5 border border-border">
           <Search size={15} className="text-muted-foreground flex-shrink-0" />
           <input
@@ -38,7 +58,7 @@ export function MapView({ listings }: MapViewProps) {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-[360px] flex-shrink-0 overflow-y-auto border-r border-border bg-background">
+        <div className="w-[360px] flex-shrink-0 overflow-y-auto border-r border-border bg-background z-10">
           <div className="p-3 space-y-2">
             {listings.map((l) => (
               <ListingCard
@@ -49,13 +69,32 @@ export function MapView({ listings }: MapViewProps) {
               />
             ))}
           </div>
+          {selected && similar.length > 0 && (
+            <div className="px-3 pb-4 border-t border-border pt-3">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Similaires ({similar.length})
+              </p>
+              <div className="space-y-2">
+                {similar.map((l) => (
+                  <ListingCard
+                    key={l.id}
+                    listing={l}
+                    compact
+                    selected={false}
+                    onClick={() => setSelectedId(l.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 relative">
-          <CityMap
+          <ListingsMap
             listings={listings}
             selectedId={selectedId}
             onSelect={(id) => setSelectedId(id)}
+            similarListings={similar}
           />
 
           <AnimatePresence>
@@ -65,7 +104,7 @@ export function MapView({ listings }: MapViewProps) {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 16 }}
-                className="absolute bottom-4 right-4 bg-card border border-primary/30 rounded-2xl p-4 w-64 shadow-2xl shadow-black/40"
+                className="absolute bottom-4 right-4 z-[1000] bg-card border border-primary/30 rounded-2xl p-4 w-64 shadow-elevated"
               >
                 <img
                   src={selected.imageUrl}
@@ -77,6 +116,12 @@ export function MapView({ listings }: MapViewProps) {
                 <div className="text-primary font-bold text-lg font-mono">
                   {selected.price.toLocaleString("fr-FR")} €/mois
                 </div>
+                {similar.length > 0 && (
+                  <p className="text-[10px] text-accent mt-2">
+                    {similar.length} bien{similar.length > 1 ? "s" : ""} similaire
+                    {similar.length > 1 ? "s" : ""} sur la carte
+                  </p>
+                )}
                 <a
                   href={selected.url}
                   target="_blank"

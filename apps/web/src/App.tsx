@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AppStatus } from "@/components/AppStatus";
 import { Nav } from "@/components/Nav";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { useListings } from "@/hooks/useListings";
 import type { AppView } from "@/types/listing";
 import { ChatView } from "@/views/ChatView";
@@ -9,14 +10,15 @@ import { HeroView } from "@/views/HeroView";
 import { MapView } from "@/views/MapView";
 import { MatchView } from "@/views/MatchView";
 
-export default function App() {
+function AppContent() {
   const [view, setView] = useState<AppView>("hero");
   const { listings, loading, error, reload } = useListings();
 
   const status = <AppStatus loading={loading} error={error} onRetry={reload} />;
+
   if (loading || error) {
     return (
-      <div className="bg-background text-foreground min-h-screen">
+      <div className="theme-surface bg-background text-foreground min-h-screen">
         <Nav view={view} onNavigate={setView} />
         {status}
       </div>
@@ -24,7 +26,7 @@ export default function App() {
   }
 
   return (
-    <div className="bg-background text-foreground min-h-screen">
+    <div className="theme-surface bg-background text-foreground min-h-screen">
       <Nav view={view} onNavigate={setView} />
       <AnimatePresence mode="wait">
         {view === "hero" && (
@@ -69,5 +71,13 @@ export default function App() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }

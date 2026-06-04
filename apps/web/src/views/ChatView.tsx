@@ -30,7 +30,7 @@ export function ChatView({ listings }: ChatViewProps) {
   );
 
   return (
-    <div className="pt-[60px] h-screen flex bg-background overflow-hidden">
+    <div className="theme-surface pt-[60px] h-screen flex bg-background overflow-hidden">
       <aside className="w-64 border-r border-border flex-shrink-0 p-4 hidden md:block">
         <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
           Amis
