@@ -7,7 +7,7 @@ Serveur Express minimal pour le frontend v2 (données annonces en JSON).
 | Méthode | Route | Description |
 |---------|-------|-------------|
 | GET | `/api/health` | Santé du service |
-| GET | `/api/listings` | Toutes les annonces |
+| GET | `/api/listings` | Toutes les annonces (query: `q`, `city`, `source`, `minPrice`, `maxPrice`, `minRooms`) |
 | GET | `/api/listings/:id` | Une annonce (404 si absente) |
 | GET | `/api/listings/:id/similar` | Annonces similaires (ville, prix, surface — mock) |
 

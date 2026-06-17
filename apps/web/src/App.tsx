@@ -46,7 +46,7 @@ function AppContent() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <MapView listings={listings} />
+            <MapView />
           </motion.div>
         )}
         {view === "match" && (
