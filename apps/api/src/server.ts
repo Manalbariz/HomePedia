@@ -1,5 +1,7 @@
+import "dotenv/config";
 import cors from "cors";
 import express from "express";
+import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,6 +11,9 @@ import {
   parseListingFilters,
 } from "./filters.js";
 import type { ListingRecord } from "./types.js";
+import { connectMongo } from "./db.js";
+import { chatRouter } from "./chat.js";
+import { initSocket } from "./socket.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_PATH = join(__dirname, "../data/listings.json");
@@ -26,6 +31,9 @@ app.use(express.json());
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", service: "homepedia-api" });
 });
+
+// Routes auth / utilisateurs / groupes / messages (chat)
+app.use("/api", chatRouter);
 
 app.get("/api/listings", (req, res) => {
   const filters = parseListingFilters(req.query as Record<string, unknown>);
@@ -52,6 +60,17 @@ app.get("/api/listings/:id", (req, res) => {
   res.json(listing);
 });
 
-app.listen(PORT, () => {
-  console.log(`homepedia-api http://localhost:${PORT}`);
+const server = createServer(app);
+initSocket(server);
+
+async function start() {
+  await connectMongo();
+  server.listen(PORT, () => {
+    console.log(`homepedia-api http://localhost:${PORT}`);
+  });
+}
+
+start().catch((err) => {
+  console.error("Échec du démarrage de l'API:", err);
+  process.exit(1);
 });

@@ -15,6 +15,7 @@ __pycache__/
 venv/
 .env
 .env.*
+!.env.example
 
 # Node (futur apps/web)
 node_modules/
