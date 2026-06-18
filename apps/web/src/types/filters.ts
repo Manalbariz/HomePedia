@@ -1,6 +1,5 @@
 import type { ListingSource } from "./listing";
 
-/** Filtres supportés par GET /api/listings */
 export interface ListingFilters {
   q?: string;
   city?: string;

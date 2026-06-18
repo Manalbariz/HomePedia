@@ -30,10 +30,3 @@ Ouvrir http://localhost:5173
 | `src/types/` | Modèle `Listing`, vues |
 | `src/components/` | Nav, `ListingsMap` (Leaflet + clusters), cartes annonce |
 | `src/views/` | Accueil, Carte, Match, Chat |
-
-## Prochaines étapes
-
-- Filtres carte branchés sur query API
-- `POST /api/listings/import` (dépôt URL)
-- Écran comparatif multi-sites
-- Zone dépôt d’annonces

@@ -163,6 +163,8 @@ export async function sendMessage(
     },
   );
   return parseJson<Message>(res);
+}
+
 export async function scrapeListingUrl(url: string): Promise<import("@/types/compare").ComparedListing> {
   const res = await fetch(`${API_BASE}/api/scrape`, {
     method: "POST",
