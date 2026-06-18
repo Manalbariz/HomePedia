@@ -1,0 +1,31 @@
+export interface ComparedListing {
+  url: string;
+  source: string;
+  scrapedAt: string;
+  title?: string;
+  type?: "appartement" | "maison" | "studio" | "autre";
+  price?: number;
+  surface?: number;
+  rooms?: number;
+  bedrooms?: number;
+  address?: string;
+  city?: string;
+  postalCode?: string;
+  lat?: number;
+  lon?: number;
+  floor?: string;
+  elevator?: boolean;
+  parking?: boolean;
+  cellar?: boolean;
+  balcony?: boolean;
+  terrace?: boolean;
+  furnished?: boolean;
+  dpe?: "A" | "B" | "C" | "D" | "E" | "F" | "G";
+  ges?: "A" | "B" | "C" | "D" | "E" | "F" | "G";
+  charges?: number;
+  deposit?: number;
+  fees?: number;
+  photos?: string[];
+  description?: string;
+  availableFrom?: string;
+}

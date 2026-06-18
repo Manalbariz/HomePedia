@@ -5,6 +5,7 @@ import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ScrapeError, debugPage, scrapeUrl } from "./scrapers/index.js";
 import {
   filterListings,
   findSimilarListings,
@@ -73,4 +74,41 @@ async function start() {
 start().catch((err) => {
   console.error("Échec du démarrage de l'API:", err);
   process.exit(1);
+// Dev-only: inspect what a page exposes without fully scraping it
+app.get("/api/debug-page", async (req, res) => {
+  const { url } = req.query as { url?: string };
+  if (!url) {
+    res.status(400).json({ error: "Query param 'url' requis" });
+    return;
+  }
+  try {
+    const dump = await debugPage(url);
+    res.json(dump);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Erreur inconnue";
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.post("/api/scrape", async (req, res) => {
+  const { url } = req.body as { url?: string };
+  if (!url || typeof url !== "string") {
+    res.status(400).json({ error: "Champ 'url' requis" });
+    return;
+  }
+  try {
+    const listing = await scrapeUrl(url);
+    res.json(listing);
+  } catch (e) {
+    if (e instanceof ScrapeError) {
+      res.status(422).json({ error: e.message });
+    } else {
+      const msg = e instanceof Error ? e.message : "Erreur inconnue";
+      res.status(500).json({ error: msg });
+    }
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`homepedia-api http://localhost:${PORT}`);
 });
