@@ -1,5 +1,6 @@
 import type { BrowserContext, Page } from "playwright";
 import { getBrowser } from "./browser.js";
+import { extractFromHtml } from "./html.js";
 import { extractJsonLd } from "./jsonld.js";
 import { extractNextDataObject } from "./nextdata.js";
 import { mergeListing } from "./normalize.js";
@@ -258,11 +259,13 @@ export async function scrapeUrl(rawUrl: string): Promise<ComparedListing> {
   const fromWindowVars = extractFromWindowVars(inlineScripts, hostname);
   // Layer 3: JSON-LD schema.org
   const fromLd = extractJsonLd(html);
-  // Layer 4: OpenGraph + French title parsing
+  // Layer 4: Cheerio HTML parsing (primary source for Vue.js sites like BienIci)
+  const fromHtml = extractFromHtml(html, hostname);
+  // Layer 5: OpenGraph + French title parsing
   const fromOg = extractOg(html);
 
   const merged = mergeListing(
-    mergeListing(mergeListing(fromNext, fromWindowVars), fromLd),
+    mergeListing(mergeListing(mergeListing(fromNext, fromWindowVars), fromLd), fromHtml),
     fromOg
   ) as ComparedListing;
 
