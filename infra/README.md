@@ -1,3 +1,7 @@
+# Infra — Kafka + Spark
+
+## Kafka (Redpanda)
+
 # Infra — Kafka (Redpanda)
 
 Broker compatible Kafka pour HomePedia v2 (Docker Desktop Windows).
@@ -9,10 +13,12 @@ cd infra
 docker compose up -d
 ```
 
-→ broker sur **localhost:9092**
+→ broker **localhost:9092**
 
+## Spark (profil optionnel)
 Vérifier :
 
+Image PySpark pour le job similarité :
 ```powershell
 docker compose ps
 docker compose logs -f kafka
@@ -21,9 +27,11 @@ docker compose logs -f kafka
 ## Arrêter
 
 ```powershell
+docker compose --profile spark pull spark
 docker compose down
 ```
 
+Le job est lancé via `npm run spark:similar` dans `apps/api` (voir [`pipelines/spark/README.md`](../pipelines/spark/README.md)).
 ## Topic
 
 Par défaut : `homepedia.listing.events` (auto-créé à la première publication).
@@ -38,6 +46,7 @@ npm install
 npm run dev
 ```
 
+## Consumer Kafka
 Au démarrage, l’API publie `listings.bootstrapped`.  
 `POST /api/listings` publie `listing.created`.
 
