@@ -23,6 +23,10 @@ dist/
 build/
 *.local
 
+# Spark / API generated data
+apps/api/data/listings.snapshot.json
+apps/api/data/similar-index.json
+
 # OS
 .DS_Store
 Thumbs.db

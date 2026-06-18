@@ -14,6 +14,12 @@ import {
 } from "./filters.js";
 import { buildBootstrappedEvent, buildCreatedEvent } from "./kafka/events.js";
 import { isKafkaEnabled, publishListingEvent } from "./kafka/producer.js";
+import {
+  isSparkSimilarEnabled,
+  loadSimilarIndex,
+  resolveSimilarFromIndex,
+  writeListingsSnapshot,
+} from "./spark/similarIndex.js";
 import type { ListingRecord } from "./types.js";
 import { connectMongo } from "./db.js";
 import { chatRouter } from "./chat.js";
@@ -50,10 +56,15 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => {
+  const similarIndex = loadSimilarIndex();
   res.json({
     status: "ok",
     service: "homepedia-api",
     kafka: { enabled: isKafkaEnabled() },
+    spark: {
+      enabled: isSparkSimilarEnabled(),
+      indexGeneratedAt: similarIndex?.generatedAt ?? null,
+    },
     listings: listingsStore.length,
   });
 });
@@ -99,6 +110,7 @@ app.post("/api/listings", async (req, res) => {
   }
 
   listingsStore = [...listingsStore, listing];
+  writeListingsSnapshot(listingsStore);
   await publishListingEvent(buildCreatedEvent(listing));
   res.status(201).json(listing);
 });
@@ -109,6 +121,18 @@ app.get("/api/listings/:id/similar", (req, res) => {
     res.status(404).json({ error: "Listing not found", id: req.params.id });
     return;
   }
+
+  if (isSparkSimilarEnabled()) {
+    const index = loadSimilarIndex();
+    if (index) {
+      const fromSpark = resolveSimilarFromIndex(base.id, listingsStore, index);
+      if (fromSpark.length > 0) {
+        res.json(fromSpark);
+        return;
+      }
+    }
+  }
+
   res.json(findSimilarListings(base, listingsStore));
 });
 
@@ -160,6 +184,7 @@ initSocket(server);
 
 async function start() {
   await connectMongo();
+  writeListingsSnapshot(listingsStore);
   server.listen(PORT, async () => {
     console.log(`homepedia-api http://localhost:${PORT}`);
     if (isKafkaEnabled()) {

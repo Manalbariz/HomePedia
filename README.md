@@ -55,3 +55,13 @@ cd apps/api && npm run kafka:consume
 ```
 
 Détails : [`infra/README.md`](infra/README.md)
+
+## Spark (similarité)
+
+```powershell
+cd apps/api
+npm run spark:similar
+# SPARK_SIMILAR_ENABLED=1 dans .env
+```
+
+Pipeline : [`pipelines/spark/README.md`](pipelines/spark/README.md)

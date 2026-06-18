@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
-    "kafka:consume": "tsx src/kafka/consumer.ts"
+    "kafka:consume": "tsx src/kafka/consumer.ts",
+    "spark:similar": "tsx src/spark/runJobCli.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

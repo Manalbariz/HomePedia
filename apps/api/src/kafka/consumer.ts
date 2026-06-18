@@ -1,5 +1,7 @@
+import "dotenv/config";
 import { Kafka } from "kafkajs";
 import { getKafkaConfig } from "./config.js";
+import { isSparkAutoRunEnabled, runSimilarSparkJob } from "../spark/runJob.js";
 
 const cfg = getKafkaConfig();
 
@@ -18,6 +20,22 @@ const consumer = kafka.consumer({
 });
 
 const fromBeginning = process.env.KAFKA_FROM_BEGINNING === "1";
+let sparkJobRunning = false;
+
+async function maybeRunSpark(event?: string) {
+  if (!isSparkAutoRunEnabled()) return;
+  if (event !== "listings.bootstrapped" && event !== "listing.created") return;
+  if (sparkJobRunning) return;
+
+  sparkJobRunning = true;
+  try {
+    await runSimilarSparkJob();
+  } catch (err) {
+    console.warn("[kafka-consumer] spark job failed:", err instanceof Error ? err.message : err);
+  } finally {
+    sparkJobRunning = false;
+  }
+}
 
 async function run() {
   await consumer.connect();
@@ -39,6 +57,7 @@ async function run() {
           `[kafka-consumer] p${partition} offset=${message.offset} event=${payload.event ?? "?"}`,
         );
         console.log(raw);
+        await maybeRunSpark(payload.event);
       } catch {
         console.log(`[kafka-consumer] p${partition} offset=${message.offset} (raw)`, raw);
       }
