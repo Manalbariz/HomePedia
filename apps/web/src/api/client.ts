@@ -1,4 +1,6 @@
 import type { Listing } from "@/types/listing";
+import type { ListingFilters } from "@/types/filters";
+import { filtersToSearchParams } from "@/types/filters";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 
@@ -26,8 +28,10 @@ async function parseJson<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export async function fetchListings(): Promise<Listing[]> {
-  const res = await fetch(`${API_BASE}/api/listings`);
+export async function fetchListings(filters: ListingFilters = {}): Promise<Listing[]> {
+  const qs = filtersToSearchParams(filters);
+  const url = qs ? `${API_BASE}/api/listings?${qs}` : `${API_BASE}/api/listings`;
+  const res = await fetch(url);
   return parseJson<Listing[]>(res);
 }
 
