@@ -4,9 +4,11 @@ import {
   Map,
   MessageCircle,
   Bell,
+  LogOut,
 } from "lucide-react";
 import type { AppView } from "@/types/listing";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from "@/context/AuthContext";
 
 const NAV_ITEMS: { id: AppView; label: string; icon: typeof Home }[] = [
   { id: "hero", label: "Accueil", icon: Home },
@@ -21,6 +23,7 @@ interface NavProps {
 }
 
 export function Nav({ view, onNavigate }: NavProps) {
+  const { user, logout } = useAuth();
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-3.5 border-b border-border backdrop-blur-xl bg-background/80">
       <button
@@ -64,9 +67,34 @@ export function Nav({ view, onNavigate }: NavProps) {
           <Bell size={16} className="text-muted-foreground" />
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary rounded-full" />
         </button>
-        <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-xs font-bold text-white">
-          JD
-        </div>
+        {user ? (
+          <>
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+              style={{ backgroundColor: user.color }}
+              title={user.displayName}
+            >
+              {user.displayName.slice(0, 2).toUpperCase()}
+            </div>
+            <button
+              type="button"
+              onClick={logout}
+              className="p-2 rounded-full hover:bg-secondary transition-colors"
+              aria-label="Se déconnecter"
+              title="Se déconnecter"
+            >
+              <LogOut size={16} className="text-muted-foreground" />
+            </button>
+          </>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onNavigate("chat")}
+            className="text-sm font-medium text-muted-foreground hover:text-foreground px-3 py-1.5"
+          >
+            Connexion
+          </button>
+        )}
       </div>
     </nav>
   );
