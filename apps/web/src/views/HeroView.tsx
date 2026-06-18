@@ -7,6 +7,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { AppView, Listing } from "@/types/listing";
+import { CompareSection } from "@/components/CompareSection";
 import { ListingsMap } from "@/components/ListingsMap";
 
 interface HeroViewProps {
@@ -171,6 +172,13 @@ export function HeroView({ listings, onNavigate }: HeroViewProps) {
           </button>
         ))}
       </div>
+
+      {/* Divider */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 mb-16">
+        <div className="border-t border-border" />
+      </div>
+
+      <CompareSection />
     </div>
   );
 }

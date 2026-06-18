@@ -42,3 +42,12 @@ export async function fetchSimilarListings(id: string): Promise<Listing[]> {
   );
   return parseJson<Listing[]>(res);
 }
+
+export async function scrapeListingUrl(url: string): Promise<import("@/types/compare").ComparedListing> {
+  const res = await fetch(`${API_BASE}/api/scrape`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url }),
+  });
+  return parseJson<import("@/types/compare").ComparedListing>(res);
+}
