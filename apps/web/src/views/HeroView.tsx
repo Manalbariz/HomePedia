@@ -29,6 +29,8 @@ export function HeroView({ listings, onNavigate }: HeroViewProps) {
         />
       </div>
 
+      <CompareSection />
+
       <div className="relative z-10 max-w-6xl mx-auto px-6 pt-14 pb-10 grid md:grid-cols-[1fr_1.1fr] gap-10 items-center">
         <div>
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-xs font-semibold px-3 py-1.5 rounded-full mb-7">
@@ -173,12 +175,6 @@ export function HeroView({ listings, onNavigate }: HeroViewProps) {
         ))}
       </div>
 
-      {/* Divider */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 mb-16">
-        <div className="border-t border-border" />
-      </div>
-
-      <CompareSection />
     </div>
   );
 }

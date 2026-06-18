@@ -4,7 +4,6 @@ import {
   ArrowRight,
   CheckCircle,
   ExternalLink,
-  GitCompareArrows,
   Loader2,
   XCircle,
 } from "lucide-react";
@@ -34,9 +33,17 @@ function DpeBadge({ grade }: { grade: string }) {
 
 // ── Boolean display ────────────────────────────────────────────────────────
 function BoolCell({ val }: { val: boolean | undefined }) {
-  if (val === true) return <CheckCircle size={16} className="text-green-500" />;
-  if (val === false) return <XCircle size={16} className="text-muted-foreground/40" />;
-  return <span className="text-muted-foreground/30 text-xs">—</span>;
+  return (
+    <span className="flex items-center justify-center">
+      {val === true ? (
+        <CheckCircle size={16} className="text-green-500" />
+      ) : val === false ? (
+        <XCircle size={16} className="text-muted-foreground/40" />
+      ) : (
+        <span className="text-muted-foreground/30 text-xs">—</span>
+      )}
+    </span>
+  );
 }
 
 // ── URL input ──────────────────────────────────────────────────────────────
@@ -356,13 +363,9 @@ export function CompareSection() {
   const bothLoaded = results[0] !== null && results[1] !== null;
 
   return (
-    <section className="relative z-10 max-w-6xl mx-auto px-6 pb-20">
+    <section className="relative z-10 max-w-6xl mx-auto px-6 pt-14 pb-20">
       {/* Header */}
       <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 text-accent text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
-          <GitCompareArrows size={11} />
-          Feature principale
-        </div>
         <h2 className="font-display text-5xl md:text-6xl font-black uppercase text-foreground tracking-tight">
           COMPAREZ
           <br />
