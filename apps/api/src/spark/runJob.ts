@@ -47,6 +47,8 @@ export async function runSimilarSparkJob(): Promise<void> {
         "spark",
         "run",
         "--rm",
+        "--user",
+        "root",
         "spark",
         "/opt/spark/bin/spark-submit",
         "--master",
