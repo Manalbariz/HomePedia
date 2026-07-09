@@ -1,7 +1,9 @@
 import type { Server as HttpServer } from "node:http";
 import { Server } from "socket.io";
+import { isValidObjectId } from "mongoose";
 import { verifyToken } from "./auth.js";
 import { Group } from "./models/Group.js";
+import { getCorsOrigins } from "./security.js";
 
 let io: Server | null = null;
 
@@ -11,7 +13,7 @@ function roomFor(groupId: string): string {
 
 export function initSocket(server: HttpServer): Server {
   io = new Server(server, {
-    cors: { origin: true, credentials: true },
+    cors: { origin: getCorsOrigins(), credentials: true },
   });
 
   // Authentification du handshake via le token passé dans `auth.token`.
@@ -39,8 +41,10 @@ export function initSocket(server: HttpServer): Server {
     }
 
     // Permet de rejoindre un groupe fraîchement créé sans reconnexion.
-    socket.on("group:join", (groupId: string) => {
-      if (typeof groupId === "string") void socket.join(roomFor(groupId));
+    socket.on("group:join", async (groupId: string) => {
+      if (typeof groupId !== "string" || !isValidObjectId(groupId)) return;
+      const group = await Group.findOne({ _id: groupId, members: userId }).select("_id");
+      if (group) void socket.join(roomFor(groupId));
     });
   });
 

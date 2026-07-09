@@ -6,7 +6,7 @@ Application de recherche / comparaison de logements (carto Leaflet, match type s
 
 | Dossier | Rôle |
 |---------|------|
-| [`docs/`](docs/) | Documentation projet (inventaire données, specs) |
+| [`docs/`](docs/) | Documentation projet (inventaire données, tests, sécurité) |
 | [`legacy/`](legacy/) | **Archive** — ancien POC Streamlit + pipelines DVF/INSEE/Spark/Kafka |
 | `data/` | Données locales (**non versionnées**, voir `.gitignore`) |
 | [`apps/web/`](apps/web/) | Frontend **nido** — React recodé (maquette Figma en référence visuelle uniquement) |
@@ -65,3 +65,14 @@ npm run spark:similar
 ```
 
 Pipeline : [`pipelines/spark/README.md`](pipelines/spark/README.md)
+
+## Tests & CI
+
+```powershell
+cd apps/api && npm test
+cd apps/web && npm test
+```
+
+Documentation : [`docs/02-tests.md`](docs/02-tests.md) · Sécurité : [`docs/03-securite.md`](docs/03-securite.md)
+
+La CI GitHub Actions (`.github/workflows/ci.yml`) exécute tests, typecheck et build sur chaque push/PR vers `main`.
