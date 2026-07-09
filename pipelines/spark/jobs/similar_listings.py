@@ -59,9 +59,9 @@ def main() -> None:
     )
     spark.sparkContext.setLogLevel("WARN")
 
-    df = spark.read.json(str(input_path))
+    df = spark.read.option("multiLine", True).json(str(input_path))
     city_udf = F.udf(extract_city)
-    df = df.withColumn("city", city_udf(F.col("address")))
+    df = df.withColumn("city", city_udf(F.col("address"))).drop("score")
 
     a = df.alias("a")
     b = df.alias("b")

@@ -32,3 +32,5 @@ apps/api/data/similar-index.json
 Thumbs.db
 
 CLAUDE.md
+
+legacy/data/
