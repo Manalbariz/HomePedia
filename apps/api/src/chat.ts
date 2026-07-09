@@ -1,13 +1,23 @@
 import { Router, type Request, type Response } from "express";
 import bcrypt from "bcryptjs";
+import rateLimit from "express-rate-limit";
 import { isValidObjectId, type Types } from "mongoose";
 import { requireAuth, signToken } from "./auth.js";
 import { emitToGroup } from "./socket.js";
+import { escapeRegex } from "./security.js";
 import { User, toPublicUser, type UserDoc } from "./models/User.js";
 import { Group } from "./models/Group.js";
 import { Message } from "./models/Message.js";
 
 export const chatRouter = Router();
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Trop de tentatives, réessayez plus tard" },
+});
 
 /** Message dont le champ `sender` a été peuplé en document utilisateur. */
 interface PopulatedMessage {
@@ -34,7 +44,7 @@ function serializeMessage(msg: PopulatedMessage): unknown {
 
 // --- Auth (public) ---------------------------------------------------------
 
-chatRouter.post("/auth/register", async (req: Request, res: Response) => {
+chatRouter.post("/auth/register", authLimiter, async (req: Request, res: Response) => {
   const { username, password } = req.body ?? {};
   if (typeof username !== "string" || typeof password !== "string") {
     res.status(400).json({ error: "username et password requis" });
@@ -69,7 +79,7 @@ chatRouter.post("/auth/register", async (req: Request, res: Response) => {
   });
 });
 
-chatRouter.post("/auth/login", async (req: Request, res: Response) => {
+chatRouter.post("/auth/login", authLimiter, async (req: Request, res: Response) => {
   const { username, password } = req.body ?? {};
   if (typeof username !== "string" || typeof password !== "string") {
     res.status(400).json({ error: "username et password requis" });
@@ -104,7 +114,7 @@ chatRouter.get("/users/search", requireAuth, async (req: Request, res: Response)
     return;
   }
   const users = await User.find({
-    username: { $regex: q, $options: "i" },
+    username: { $regex: escapeRegex(q), $options: "i" },
     _id: { $ne: req.userId },
   })
     .limit(10)
