@@ -239,6 +239,23 @@ export async function debugPage(rawUrl: string): Promise<PageDump> {
   };
 }
 
+// ── Search page (discovery) ────────────────────────────────────────────────
+
+export async function fetchSearchPageHtml(rawUrl: string): Promise<{
+  html: string;
+  pageUrl: string;
+}> {
+  let url: URL;
+  try {
+    url = new URL(rawUrl);
+  } catch {
+    throw new ScrapeError("URL invalide");
+  }
+  const config = getSiteConfig(url.hostname);
+  const { html } = await fetchPage(url.toString(), config);
+  return { html, pageUrl: url.toString() };
+}
+
 // ── Main scrape ────────────────────────────────────────────────────────────
 
 export async function scrapeUrl(rawUrl: string): Promise<ComparedListing> {

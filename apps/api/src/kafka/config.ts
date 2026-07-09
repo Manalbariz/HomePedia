@@ -2,6 +2,8 @@ export interface KafkaConfig {
   enabled: boolean;
   brokers: string[];
   topicListings: string;
+  topicRaw: string;
+  topicCrawl: string;
   clientId: string;
 }
 
@@ -16,6 +18,8 @@ export function getKafkaConfig(): KafkaConfig {
       .map((b) => b.trim())
       .filter(Boolean),
     topicListings: process.env.KAFKA_TOPIC_LISTINGS ?? "homepedia.listing.events",
+    topicRaw: process.env.KAFKA_TOPIC_RAW ?? "homepedia.listing.raw",
+    topicCrawl: process.env.KAFKA_TOPIC_CRAWL ?? "homepedia.listing.crawl",
     clientId: process.env.KAFKA_CLIENT_ID ?? "homepedia-api",
   };
 }

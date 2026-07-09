@@ -1,0 +1,8 @@
+# URLs à ingérer via : npm run kafka:ingest -- data/ingest-urls.txt
+# Une URL par ligne. Les lignes vides et celles commençant par # sont ignorées.
+#
+# Remplacez par de vraies URLs SeLoger / Leboncoin / Bien'ici.
+# Le scrape exige lat/lon — certaines annonces peuvent échouer sans géocodage.
+
+https://example.com/seloger/paris-champs-elysees-1
+https://example.com/leboncoin/paris-bastille-2

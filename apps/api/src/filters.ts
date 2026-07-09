@@ -9,6 +9,20 @@ export interface ListingFilters {
   minRooms?: number;
 }
 
+export interface ListingPagination {
+  limit?: number;
+  offset: number;
+}
+
+export interface PaginatedListings<T> {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+const MAX_PAGE_SIZE = 200;
+
 export function extractCity(address: string): string {
   const tail = address.includes(",") ? address.split(",").pop()!.trim() : address;
   const lower = tail.toLowerCase();
@@ -45,6 +59,39 @@ export function parseListingFilters(query: Record<string, unknown>): ListingFilt
     minPrice: parseOptionalInt(query.minPrice),
     maxPrice: parseOptionalInt(query.maxPrice),
     minRooms: parseOptionalInt(query.minRooms),
+  };
+}
+
+export function parsePagination(query: Record<string, unknown>): ListingPagination {
+  const rawLimit = parseOptionalInt(query.limit);
+  const rawOffset = parseOptionalInt(query.offset) ?? 0;
+  return {
+    limit:
+      rawLimit !== undefined && rawLimit > 0
+        ? Math.min(rawLimit, MAX_PAGE_SIZE)
+        : undefined,
+    offset: Math.max(0, rawOffset),
+  };
+}
+
+export function paginateListings<T>(
+  listings: T[],
+  pagination: ListingPagination,
+): PaginatedListings<T> {
+  const offset = pagination.offset;
+  if (pagination.limit === undefined) {
+    return {
+      items: listings,
+      total: listings.length,
+      limit: listings.length,
+      offset,
+    };
+  }
+  return {
+    items: listings.slice(offset, offset + pagination.limit),
+    total: listings.length,
+    limit: pagination.limit,
+    offset,
   };
 }
 

@@ -1,46 +1,52 @@
-# HomePedia — API mock
+# HomePedia — API
 
-Serveur Express minimal pour le frontend v2 (données annonces en JSON).
+Serveur Express (listings, auth/chat, scrape, pipeline Kafka).
 
-## Endpoints
+## Endpoints principaux
 
 | Méthode | Route | Description |
 |---------|-------|-------------|
-| GET | `/api/health` | Santé du service (+ statut Kafka) |
-| GET | `/api/listings` | Toutes les annonces (query: `q`, `city`, `source`, `minPrice`, `maxPrice`, `minRooms`) |
-| POST | `/api/listings` | Créer une annonce (mock) + événement Kafka si activé |
-| GET | `/api/listings/:id` | Une annonce (404 si absente) |
-| GET | `/api/listings/:id/similar` | Similaires (Spark si index présent, sinon mock) |
+| GET | `/api/health` | Santé (+ `listingsSource`, Kafka, Spark) |
+| GET | `/api/listings` | Annonces filtrées (`q`, `city`, `source`, prix, `limit`, `offset`) |
+| GET | `/api/listings/:id` | Détail annonce |
+| GET | `/api/listings/:id/similar` | Similaires (Spark ou algo mock) |
+| POST | `/api/listings` | Créer une annonce |
+| POST | `/api/scrape` | Scraper une URL (si `SCRAPE_ENABLED=1`) |
 
-Données : `data/listings.json` (**22 annonces** de démo — Paris, Lyon, Bordeaux, Marseille, etc., 3 sources + `example`).
+## Source des données
+
+| `LISTINGS_SOURCE` | Comportement |
+|-------------------|--------------|
+| `mock` (défaut) | 22 fixtures JSON en mémoire |
+| `mongo` | MongoDB (DVF, scrape, seed) |
+
+## Scripts
+
+```powershell
+npm run dev                  # API (port 3001)
+npm test                     # Vitest (35 tests)
+npm run listings:seed        # Fixtures → Mongo
+npm run listings:dvf-volume  # DVF open data → Mongo (--limit=1000 ou DVF_LIMIT=1000)
+npm run kafka:preprocess     # raw → Mongo
+npm run kafka:crawl          # pages recherche → topic crawl
+npm run kafka:ingest-worker  # crawl → scrape → raw
+npm run kafka:consume        # events → Spark (optionnel)
+npm run playwright:install   # navigateur pour scrape
+```
+
+Pipeline détaillé : [`docs/04-pipeline-donnees.md`](../../docs/04-pipeline-donnees.md)
 
 ## Lancer
 
 ```powershell
 cd apps/api
+copy .env.example .env
 npm install
 npm run dev
 ```
 
-Port par défaut : **3001** (`PORT` pour changer).
+Port : **3001** (`PORT`). Frontend proxy `/api` → `3001` en dev.
 
-Le frontend (`apps/web`) proxy `/api` → `http://localhost:3001` en dev.
+## Kafka + Spark
 
-## Kafka (optionnel)
-
-1. Broker : [`infra/README.md`](../../infra/README.md) — `docker compose up -d` dans `infra/`
-2. Copier `.env.example` → `.env`, mettre `KAFKA_ENABLED=1`
-3. Consumer : `npm run kafka:consume`
-
-Événements sur le topic `homepedia.listing.events` :
-
-- `listings.bootstrapped` — au démarrage de l’API
-- `listing.created` — après `POST /api/listings`
-
-## Spark similarité
-
-1. Générer l’index : `npm run spark:similar` (Docker Spark via `infra/`)
-2. `.env` : `SPARK_SIMILAR_ENABLED=1`
-3. Optionnel : `SPARK_AUTO_RUN=1` + consumer Kafka relance le job
-
-Détails : [`pipelines/spark/README.md`](../../pipelines/spark/README.md)
+Voir [`infra/README.md`](../../infra/README.md) et [`pipelines/spark/README.md`](../../pipelines/spark/README.md).

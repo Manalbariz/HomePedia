@@ -1,0 +1,16 @@
+# Pages de recherche à crawler (une URL par ligne)
+# Usage : npm run kafka:crawl -- data/search-urls.txt
+#
+# Exemples (à adapter — les sites changent souvent leurs URLs) :
+
+# Paris — locations
+https://www.seloger.com/list.htm?projects=2&types=1&places=[{cp:75}]&price=NaN/3000&surface=20/120&rooms=1,4
+
+# Lyon
+https://www.seloger.com/list.htm?projects=2&types=1&places=[{cp:69}]&price=NaN/2000
+
+# Bordeaux
+https://www.seloger.com/list.htm?projects=2&types=1&places=[{cp:33}]&price=NaN/1800
+
+# Leboncoin — recherche locations (exemple)
+# https://www.leboncoin.fr/recherche?category=10&locations=Paris__48.856614_2.3522219_5000

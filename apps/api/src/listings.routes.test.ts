@@ -1,6 +1,7 @@
 import request from "supertest";
 import { beforeEach, describe, expect, it } from "vitest";
-import { createApp, resetListingsStoreForTests } from "./app.js";
+import { createApp } from "./app.js";
+import { resetListingsStoreForTests } from "./listings/repository.js";
 
 describe("listing routes", () => {
   beforeEach(() => {
@@ -24,6 +25,18 @@ describe("listing routes", () => {
     for (const listing of res.body) {
       expect(listing.address.toLowerCase()).toContain("paris");
     }
+  });
+
+  it("GET /api/listings?limit= pagine la réponse", async () => {
+    const res = await request(app).get("/api/listings").query({ limit: 5, offset: 0 });
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      total: expect.any(Number),
+      limit: 5,
+      offset: 0,
+    });
+    expect(Array.isArray(res.body.items)).toBe(true);
+    expect(res.body.items.length).toBeLessThanOrEqual(5);
   });
 
   it("GET /api/listings/:id renvoie 404 si inconnu", async () => {

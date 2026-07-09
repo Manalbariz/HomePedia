@@ -17,6 +17,10 @@ describe("filtersToSearchParams", () => {
   it("retourne une chaîne vide sans filtres actifs", () => {
     expect(filtersToSearchParams({})).toBe("");
   });
+
+  it("inclut limit et offset pour la pagination", () => {
+    expect(filtersToSearchParams({ limit: 20, offset: 40 })).toBe("limit=20&offset=40");
+  });
 });
 
 describe("countActiveFilters", () => {

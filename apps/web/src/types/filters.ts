@@ -7,6 +7,15 @@ export interface ListingFilters {
   minPrice?: number;
   maxPrice?: number;
   minRooms?: number;
+  limit?: number;
+  offset?: number;
+}
+
+export interface PaginatedListings<T> {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 export const LISTING_SOURCES: { value: ListingSource | ""; label: string }[] = [
@@ -40,6 +49,10 @@ export function filtersToSearchParams(filters: ListingFilters): string {
     params.set("maxPrice", String(filters.maxPrice));
   if (filters.minRooms !== undefined && filters.minRooms > 0)
     params.set("minRooms", String(filters.minRooms));
+  if (filters.limit !== undefined && filters.limit > 0)
+    params.set("limit", String(filters.limit));
+  if (filters.offset !== undefined && filters.offset > 0)
+    params.set("offset", String(filters.offset));
   return params.toString();
 }
 

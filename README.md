@@ -73,6 +73,6 @@ cd apps/api && npm test
 cd apps/web && npm test
 ```
 
-Documentation : [`docs/02-tests.md`](docs/02-tests.md) · Sécurité : [`docs/03-securite.md`](docs/03-securite.md)
+Documentation : [`docs/02-tests.md`](docs/02-tests.md) · Sécurité : [`docs/03-securite.md`](docs/03-securite.md) · Pipeline données : [`docs/04-pipeline-donnees.md`](docs/04-pipeline-donnees.md)
 
 La CI GitHub Actions (`.github/workflows/ci.yml`) exécute tests, typecheck et build sur chaque push/PR vers `main`.

@@ -32,9 +32,14 @@ docker compose down
 ```
 
 Le job est lancé via `npm run spark:similar` dans `apps/api` (voir [`pipelines/spark/README.md`](../pipelines/spark/README.md)).
-## Topic
+## Topics
 
-Par défaut : `homepedia.listing.events` (auto-créé à la première publication).
+| Topic | Rôle |
+|-------|------|
+| `homepedia.listing.raw` | Données brutes (scrape, batch) → preprocess |
+| `homepedia.listing.events` | Annonces normalisées (cycle de vie) |
+
+Variables : `KAFKA_TOPIC_RAW`, `KAFKA_TOPIC_LISTINGS` (voir `apps/api/.env.example`).
 
 ## Brancher l’API
 
@@ -46,11 +51,17 @@ npm install
 npm run dev
 ```
 
-## Consumer Kafka
-Au démarrage, l’API publie `listings.bootstrapped`.  
-`POST /api/listings` publie `listing.created`.
+## Consumer preprocess (raw → Mongo → events)
 
-## Consumer
+```powershell
+cd apps/api
+$env:KAFKA_ENABLED="1"
+npm run kafka:preprocess
+```
+
+Lit `homepedia.listing.raw`, normalise en `ListingRecord`, upsert MongoDB, publie `listing.created`.
+
+## Consumer events (→ Spark)
 
 ```powershell
 cd apps/api
