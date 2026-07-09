@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "typecheck": "tsc --noEmit",
     "start": "tsx src/server.ts",
     "kafka:consume": "tsx src/kafka/consumer.ts",
     "spark:similar": "tsx src/spark/runJobCli.ts"
