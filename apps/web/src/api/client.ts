@@ -1,5 +1,5 @@
 import type { Listing } from "@/types/listing";
-import type { ListingFilters } from "@/types/filters";
+import type { ListingFilters, PaginatedListings } from "@/types/filters";
 import { filtersToSearchParams } from "@/types/filters";
 import type { AuthResponse, Group, Message, User } from "@/types/chat";
 
@@ -64,7 +64,17 @@ export async function fetchListings(filters: ListingFilters = {}): Promise<Listi
   const qs = filtersToSearchParams(filters);
   const url = qs ? `${API_BASE}/api/listings?${qs}` : `${API_BASE}/api/listings`;
   const res = await fetch(url);
-  return parseJson<Listing[]>(res);
+  const data = await parseJson<Listing[] | PaginatedListings<Listing>>(res);
+  return Array.isArray(data) ? data : data.items;
+}
+
+export async function fetchListingsPage(
+  filters: ListingFilters = {},
+): Promise<PaginatedListings<Listing>> {
+  const withLimit: ListingFilters = { limit: 50, offset: 0, ...filters };
+  const qs = filtersToSearchParams(withLimit);
+  const res = await fetch(`${API_BASE}/api/listings?${qs}`);
+  return parseJson<PaginatedListings<Listing>>(res);
 }
 
 export async function fetchListingById(id: string): Promise<Listing> {

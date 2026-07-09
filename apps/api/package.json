@@ -10,6 +10,13 @@
     "test:watch": "vitest",
     "start": "tsx src/server.ts",
     "kafka:consume": "tsx src/kafka/consumer.ts",
+    "kafka:preprocess": "tsx src/kafka/preprocessConsumer.ts",
+    "kafka:crawl": "tsx src/kafka/crawlCli.ts",
+    "kafka:ingest-worker": "tsx src/kafka/ingestWorker.ts",
+    "kafka:ingest": "tsx src/kafka/ingestCli.ts",
+    "listings:seed": "tsx src/listings/seedCli.ts",
+    "listings:dvf-volume": "tsx src/listings/dvfVolumeCli.ts",
+    "playwright:install": "playwright install chromium",
     "spark:similar": "tsx src/spark/runJobCli.ts"
   },
   "dependencies": {

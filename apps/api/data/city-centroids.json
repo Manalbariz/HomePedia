@@ -1,0 +1,19 @@
+{
+  "paris": { "lat": 48.8566, "lon": 2.3522, "label": "Paris" },
+  "lyon": { "lat": 45.764, "lon": 4.8357, "label": "Lyon" },
+  "bordeaux": { "lat": 44.8378, "lon": -0.5792, "label": "Bordeaux" },
+  "marseille": { "lat": 43.2965, "lon": 5.3698, "label": "Marseille" },
+  "nantes": { "lat": 47.2184, "lon": -1.5536, "label": "Nantes" },
+  "lille": { "lat": 50.6292, "lon": 3.0573, "label": "Lille" },
+  "toulouse": { "lat": 43.6047, "lon": 1.4442, "label": "Toulouse" },
+  "strasbourg": { "lat": 48.5734, "lon": 7.7521, "label": "Strasbourg" },
+  "saint-malo": { "lat": 48.6493, "lon": -2.0257, "label": "Saint-Malo" },
+  "merignac": { "lat": 44.8416, "lon": -0.645, "label": "Mérignac" },
+  "dept-75": { "lat": 48.8566, "lon": 2.3522, "label": "Paris (75)" },
+  "dept-69": { "lat": 45.764, "lon": 4.8357, "label": "Rhône (69)" },
+  "dept-33": { "lat": 44.8378, "lon": -0.5792, "label": "Gironde (33)" },
+  "dept-13": { "lat": 43.2965, "lon": 5.3698, "label": "Bouches-du-Rhône (13)" },
+  "dept-44": { "lat": 47.2184, "lon": -1.5536, "label": "Loire-Atlantique (44)" },
+  "dept-59": { "lat": 50.6292, "lon": 3.0573, "label": "Nord (59)" },
+  "dept-31": { "lat": 43.6047, "lon": 1.4442, "label": "Haute-Garonne (31)" }
+}

@@ -3,7 +3,9 @@ import {
   extractCity,
   filterListings,
   findSimilarListings,
+  paginateListings,
   parseListingFilters,
+  parsePagination,
 } from "./filters.js";
 import type { ListingRecord } from "./types.js";
 
@@ -87,5 +89,26 @@ describe("findSimilarListings", () => {
   it("retourne des annonces de la même ville, hors base", () => {
     const similar = findSimilarListings(parisA, [parisA, parisB, lyon]);
     expect(similar.map((l) => l.id)).toEqual(["b"]);
+  });
+});
+
+describe("parsePagination", () => {
+  it("plafonne limit à 200", () => {
+    expect(parsePagination({ limit: "500" }).limit).toBe(200);
+  });
+
+  it("ignore limit invalide", () => {
+    expect(parsePagination({ limit: "0" }).limit).toBeUndefined();
+  });
+});
+
+describe("paginateListings", () => {
+  const all = [parisA, parisB, lyon];
+
+  it("découpe avec limit et offset", () => {
+    const page = paginateListings(all, { limit: 2, offset: 1 });
+    expect(page.items).toHaveLength(2);
+    expect(page.total).toBe(3);
+    expect(page.items[0]?.id).toBe("b");
   });
 });

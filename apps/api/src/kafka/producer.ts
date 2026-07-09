@@ -1,6 +1,8 @@
 import { Kafka, type Producer } from "kafkajs";
 import { getKafkaConfig } from "./config.js";
 import type { ListingEvent } from "./events.js";
+import type { ListingRawEvent } from "./rawEvents.js";
+import type { ListingCrawlEvent } from "./crawlEvents.js";
 
 let producer: Producer | null = null;
 let connectPromise: Promise<Producer | null> | null = null;
@@ -52,6 +54,45 @@ export async function publishListingEvent(event: ListingEvent): Promise<boolean>
     return true;
   } catch (err) {
     console.warn("[kafka] publish failed:", err instanceof Error ? err.message : err);
+    return false;
+  }
+}
+
+export async function publishRawListingEvent(event: ListingRawEvent): Promise<boolean> {
+  const cfg = getKafkaConfig();
+  if (!cfg.enabled) return false;
+
+  const p = await connectProducer();
+  if (!p) return false;
+
+  try {
+    await p.send({
+      topic: cfg.topicRaw,
+      messages: [{ key: event.event, value: JSON.stringify(event) }],
+    });
+    console.log(`[kafka] published ${event.event} → ${cfg.topicRaw}`);
+    return true;
+  } catch (err) {
+    console.warn("[kafka] raw publish failed:", err instanceof Error ? err.message : err);
+    return false;
+  }
+}
+
+export async function publishCrawlUrlEvent(event: ListingCrawlEvent): Promise<boolean> {
+  const cfg = getKafkaConfig();
+  if (!cfg.enabled) return false;
+
+  const p = await connectProducer();
+  if (!p) return false;
+
+  try {
+    await p.send({
+      topic: cfg.topicCrawl,
+      messages: [{ key: event.event, value: JSON.stringify(event) }],
+    });
+    return true;
+  } catch (err) {
+    console.warn("[kafka] crawl publish failed:", err instanceof Error ? err.message : err);
     return false;
   }
 }
